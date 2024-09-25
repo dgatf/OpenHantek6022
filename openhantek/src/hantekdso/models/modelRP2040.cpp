@@ -40,10 +40,10 @@ static void initSpecifications( Dso::ControlSpecification &specification ) {
     // Lower effective sample rates < 10 kS/s use oversampling to increase the SNR
 
     specification.samplerate.single.base = 100e3;
-    specification.samplerate.single.max = 200e6;
+    specification.samplerate.single.max = 1e6;
     specification.samplerate.single.recordLengths = { UINT_MAX };
     specification.samplerate.multi.base = 100e3;
-    specification.samplerate.multi.max = 100e3;
+    specification.samplerate.multi.max = 500e3;
     specification.samplerate.multi.recordLengths = { UINT_MAX };
 
     specification.fixedSampleRates = {
@@ -55,7 +55,9 @@ static void initSpecifications( Dso::ControlSpecification &specification ) {
         { 20e3, 102, 1 },
         { 50e3, 105, 1 },
         { 100e3, 110, 1 },
-        { 200e3, 120, 1 }
+        { 200e3, 120, 1 },
+        { 500e3, 150, 1 },
+        { 1e6, 1, 1 }
     };
 
     specification.couplings = { Dso::Coupling::DC, Dso::Coupling::AC };
@@ -66,7 +68,7 @@ static void initSpecifications( Dso::ControlSpecification &specification ) {
         Dso::TriggerMode::ROLL,
     };
 
-    specification.fixedUSBinLength = 64;
+    specification.fixedUSBinLength = 0;
 
     specification.calfreqSteps = { 30,   40,   50,   60,   80,   100,  120,  160,  200,  250,  300,  400,  440,
                                    500,  600,  660,  800,  1000, 1200, 1600, 2000, 2500, 3300, 4000, 5000, 6000,
