@@ -40,10 +40,10 @@ static void initSpecifications( Dso::ControlSpecification &specification ) {
     // Lower effective sample rates < 10 kS/s use oversampling to increase the SNR
 
     specification.samplerate.single.base = 100e3;
-    specification.samplerate.single.max = 1e6;
+    specification.samplerate.single.max = 2e6;
     specification.samplerate.single.recordLengths = { UINT_MAX };
     specification.samplerate.multi.base = 100e3;
-    specification.samplerate.multi.max = 500e3;
+    specification.samplerate.multi.max = 1e6;
     specification.samplerate.multi.recordLengths = { UINT_MAX };
 
     specification.fixedSampleRates = {
@@ -57,7 +57,8 @@ static void initSpecifications( Dso::ControlSpecification &specification ) {
         { 100e3, 110, 1 },
         { 200e3, 120, 1 },
         { 500e3, 150, 1 },
-        { 1e6, 1, 1 }
+        { 1e6, 1, 1 },
+        { 2e6, 2, 1 }
     };
 
     specification.couplings = { Dso::Coupling::DC, Dso::Coupling::AC };
