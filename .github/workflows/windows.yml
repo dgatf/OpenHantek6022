@@ -71,57 +71,6 @@ jobs:
         7z a ../packages/$ZIP *.exe driver documents
         ls -l ../packages
 
-# --------------------------
-# --- Windows MSVC steps ---
-# --------------------------
-#
-  windows-msvc_x64:
-    runs-on: windows-2022
-    steps:
-
-    # --- Clone the latest commit ---
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-tags: true
-        submodules: recursive
-        fetch-depth: 0
-
-    # --- Config git and get the version from "git describe" ---
-    - name: Config Git
-      id: config_git
-      shell: bash
-      run: |
-        git config user.email "Ho-Ro@users.noreply.github.com"
-        git config user.name "Ho-Ro"
-        git fetch --prune --unshallow --tags || true
-        git submodule update --init --recursive
-        echo "git_describe=$(git describe)"
-        echo "git_describe=$(git describe)" >> $GITHUB_OUTPUT
-
-    - name: Install Qt for Windows
-      uses: jurplel/install-qt-action@v3
-
-    - name: Setup Windows MSVC Build
-      run:
-        md build &
-        call "%VCINSTALLDIR%/Auxiliary/Build/vcvars64.bat" &
-        cmake -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH=%Qt5_DIR% -DCMAKE_BUILD_TYPE=Release -Bbuild
-
-    - name: Windows MSVC Build
-      # GitHub hosts Windows runners on Standard_DS2_v2 virtual machines in Microsoft Azure:
-      # 2-core CPU, 7 GB of RAM memory, 14 GB of SSD disk space
-      working-directory: ${{github.workspace}}/build
-      shell: bash
-      run: |
-        cmake --build . --parallel 8 --config Release --target package
-        ZIP=$(basename packages/openhantek_*_msvc_x64.zip)
-        rm -f packages/openhantek_*_msvc_x64.*
-        cd openhantek/Release
-        7z a ../../packages/$ZIP *
-        cd ../..
-        ls -l packages
-
     - name: Upload to Google Drive
       uses: logickoder/g-drive-upload@main
       with:
