@@ -53,7 +53,7 @@ jobs:
         version: Qt5.15.7-Windows-x86_64-MinGW8.1.0-staticFull-20221104
 
     - name: Start Windows Build
-      shell: msys2 {0}
+      #shell: msys2 {0}
       run: |
         cmake -D CMAKE_PREFIX_PATH=/mingw64/qt5-static -D CMAKE_BUILD_TYPE=$BUILD_TYPE -B build
         cmake --build build --parallel 8 --target package
