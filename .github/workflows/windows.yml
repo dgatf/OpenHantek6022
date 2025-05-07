@@ -47,16 +47,10 @@ jobs:
         submodules: recursive
         fetch-depth: 0
 
-    - name: Install MSYS2 Packages
-      uses: msys2/setup-msys2@v2
+    - name: install qt static
+      uses: orestonce/install-qt-static@v0.4.3
       with:
-        update: true
-        install: >-
-          mingw-w64-x86_64-cmake
-          mingw-w64-x86_64-gcc
-          mingw-w64-x86_64-qt5-static
-          mingw-w64-x86_64-fftw
-          mingw-w64-x86_64-libusb
+        version: Qt5.15.7-Windows-x86_64-MinGW8.1.0-staticFull-20221104
 
     - name: Start Windows Build
       shell: msys2 {0}
