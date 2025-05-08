@@ -1,0 +1,42 @@
+name: Build Linux
+
+on: workflow_dispatch
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  linux-x86_64:
+    runs-on: ubuntu-22.04
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-tags: true
+        submodules: recursive
+        fetch-depth: 0
+
+    - name: Install Ubuntu Build Requirements
+      run: |
+        mkdir build
+        sudo apt install g++ make cmake fakeroot rpm qttools5-dev libfftw3-dev binutils-dev \
+        libusb-1.0-0-dev libqt5opengl5-dev mesa-common-dev libgl1-mesa-dev libgles2-mesa-dev
+
+    - name: Ubuntu Build
+      working-directory: ${{github.workspace}}/build
+      run: |
+        cp ../CHANGELOG changelog
+        cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        make -j8
+        fakeroot make -j8 package
+        ls -l packages
+
+    - name: Upload to Google Drive
+      uses: logickoder/g-drive-upload@main
+      with:
+        credentials: ${{ secrets.GOOGLE_ID }}
+        filename: 'build/packages/$ZIP'
+        folderId: ${{ secrets.FOLDER_ID }}
+        overwrite: 'true'
+
