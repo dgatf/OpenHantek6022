@@ -21,8 +21,8 @@ name: Build
 # check if OH6022 builds on some recent operating systems
 # deploy Ubuntu / macOS / Windows binaries
 
-on: [push]
-
+#on: [push]
+on: workflow_dispatch
 
 env:
   # CMake build type (Release, Debug, RelWithDebInfo, etc.)
