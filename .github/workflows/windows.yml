@@ -48,7 +48,7 @@ jobs:
       uses: logickoder/g-drive-upload@main
       with:
         credentials: ${{ secrets.GOOGLE_ID }}
-        filename: 'build/packages/$ZIP'
+        filename: 'build/packages/openhantek__mingw_x64.zip'
         folderId: ${{ secrets.FOLDER_ID }}
         overwrite: 'true'
 
