@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project(OpenHantek)
 
 find_package(Git)
+set(PACKAGE_VERSION "1.0.0")
 
 if (GIT_EXECUTABLE AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     # show modified files
