@@ -1,8 +1,7 @@
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project(OpenHantek)
 
 find_package(Git)
-set(PACKAGE_VERSION "1.0.0")
 
 if (GIT_EXECUTABLE AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     # show modified files
@@ -18,33 +17,15 @@ if (GIT_EXECUTABLE AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
         OUTPUT_STRIP_TRAILING_WHITESPACE
     )
     # devdrop or release?
-    string(FIND ${VERSION} "devdrop-0-g" DEVDROP_POS)
-    string(FIND ${VERSION} "-0-g" ZERO_POS)
-    if( ${DEVDROP_POS} EQUAL 0 ) # "x.y.z-p-gxxxxxxx(-dirty)-devdrop"
-        execute_process(
-            COMMAND ${GIT_EXECUTABLE} describe --long --dirty
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            OUTPUT_VARIABLE VERSION
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-        set( VERSION "${VERSION}-devdrop" )
-    elseif( ${ZERO_POS} GREATER 0 ) # x.y.z(-dirty)
-        # message(STATUS "TAG")
-        execute_process(
-            COMMAND ${GIT_EXECUTABLE} describe --dirty
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            OUTPUT_VARIABLE VERSION
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-    else() # "x.y.z-p-gxxxxxxx(-dirty)"
-        execute_process(
-            COMMAND ${GIT_EXECUTABLE} describe --long --dirty
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            OUTPUT_VARIABLE VERSION
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-    endif()
-    set( PACKAGE_VERSION ${VERSION} )
+
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} describe --long --dirty
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE VERSION
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    set( PACKAGE_VERSION "1.0.0" )
 endif()
 
 message(STATUS "PACKAGE_VERSION: ${PACKAGE_VERSION}")
@@ -77,11 +58,19 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 # enable extra feature(s)
-# 'add_compile_definitions()' was introduced with CMake 3.12
-add_compile_definitions( _GLIBCXX_ASSERTIONS )
-add_compile_definitions( _USE_MATH_DEFINES )
-if ( DEFINED VERSION )
-    add_compile_definitions( VERSION="${VERSION}" )
+if( ${CMAKE_VERSION} VERSION_LESS "3.12.0" ) # deprecated, but still used in older Ubuntu releases
+    # Enable C++ standard library hardening -> cheap range checks for C++ arrays, vectors, and strings.
+    add_definitions( -D_GLIBCXX_ASSERTIONS )
+    add_definitions( -D_USE_MATH_DEFINES )
+    if ( DEFINED VERSION )
+        add_definitions( -DVERSION="${VERSION}" )
+    endif()
+else() # 'add_compile_definitions()' was introduced with CMake 3.12
+    add_compile_definitions( _GLIBCXX_ASSERTIONS )
+    add_compile_definitions( _USE_MATH_DEFINES )
+    if ( DEFINED VERSION )
+        add_compile_definitions( VERSION="${VERSION}" )
+    endif()
 endif()
 
 # show all compile options and definitions
@@ -109,4 +98,3 @@ add_custom_target(
 
 # Use CPack to make tgz/deb/rpm/zip installer packages
 include(cmake/CPackInfos.cmake)
-
